@@ -1,0 +1,14 @@
+#### Common
+/compose.yml
+/Containerfile
+.DS_Store
+.gitignore
+/.dockerignore
+/.env
+/.env.example
+/.git
+/Makefile
+/readme.md
+
+#### Project
+/.github

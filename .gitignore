@@ -1,0 +1,10 @@
+#### Common
+.DS_Store
+/.env
+/.idea
+/.vscode/*
+!/.vscode/launch.json
+Thumbs.db
+
+#### Project
+/__debug_*

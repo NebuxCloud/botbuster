@@ -1,0 +1,31 @@
+services:
+  go:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: base
+      args:
+        USER_ID: ${USER_ID:-1000}
+    volumes:
+      - .:/go/src/app
+      - ~/go/pkg:/go/pkg
+    env_file: .env
+    ports:
+      - ${LISTEN_PORT:-8000}:${LISTEN_PORT:-8000}
+      - ${DELVE_PORT:-2345}:${DELVE_PORT:-2345}
+    tty: true
+
+  valkey:
+    image: docker.io/valkey/valkey:9.0.1
+    command:
+      - valkey-server
+      - --appendonly
+      - 'yes'
+    user: valkey
+    volumes:
+      - valkey_storage:/data
+    ports:
+      - ${VALKEY_PORT:-6379}:6379
+
+volumes:
+  valkey_storage:
