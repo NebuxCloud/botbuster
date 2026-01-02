@@ -53,6 +53,111 @@ To install, simply run
 go install github.com/NebuxCloud/botbuster@latest
 ```
 
+### Helm
+
+This project can easily be deployed to Kubernetes with [Nebux' stateless Helm chart](https://github.com/NebuxCloud/helm-charts/tree/main/charts/stateless).
+
+See the following example values:
+
+```yaml
+workloads:
+  default:
+    revisionHistoryLimit: 10
+
+    strategy:
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 1
+
+    containers:
+      default:
+        image: ghcr.io/nebuxcloud/botbuster:<tag>
+        envFrom:
+          configMaps:
+            - default
+          secrets:
+            - default
+        resources:
+          requests:
+            cpu: 50m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        ports:
+          - name: http
+            containerPort: 8000
+        probes:
+          readiness:
+            httpGet:
+              path: /_health
+              port: http
+            initialDelaySeconds: 5
+          liveness:
+            httpGet:
+              path: /_health
+              port: http
+            initialDelaySeconds: 5
+
+    autoscaling:
+      targetCPUUtilizationPercentage: 90
+      replicas:
+        min: 2
+        max: 6
+
+    disruptionBudget:
+      maxUnavailable: 1
+
+    networkPolicy:
+      ingress:
+        - ports:
+            - port: http
+          from: []
+
+    service:
+      annotations:
+        service.kubernetes.io/topology-mode: Auto
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 80
+          targetPort: http
+
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+
+configMaps:
+  default:
+    ALLOWED_ORIGINS: https://example.org
+
+secrets:
+  default:
+    HMAC_KEY: '<secret>'
+    VALKEY_URL: 'redis://<user>:<password>@<host>:6379/<database>'
+
+httpRoutes:
+  - name: default
+    parentRefs:
+      - namespace: networking
+        name: default
+    hostnames:
+      - captcha.example.org
+    rules:
+      - matches:
+          - path:
+              value: /
+        filters:
+          - type: ResponseHeaderModifier
+            responseHeaderModifier:
+              add:
+                - name: strict-transport-security
+                  value: max-age=31536000; includeSubDomains; preload
+                - name: x-robots-tag
+                  value: noindex, nofollow
+        backendRefs: [{}]
+```
+
 ## Configuration
 
 The software is configured with environment variables.
