@@ -46,11 +46,17 @@ func (api *API) Serve(ctx context.Context) error {
 		MaxAge:         24 * 60 * 60, // 24 hours
 	})
 
+	// Chain middlewares
+	handler := chain(mux,
+		noSniffMiddleware,
+		crs.Handler,
+	)
+
 	// Initialize HTTP server
 	api.server = &http.Server{
 		Addr: ":" + api.cfg.ListenPort,
 		Handler: h2c.NewHandler(
-			crs.Handler(mux),
+			handler,
 			&http2.Server{},
 		),
 		BaseContext: func(net.Listener) context.Context {
