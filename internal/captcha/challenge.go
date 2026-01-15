@@ -10,7 +10,8 @@ func (mng *Manager) CreateChallenge() (altcha.Challenge, error) {
 	expires := time.Now().Add(mng.cfg.Expiration)
 
 	return altcha.CreateChallenge(altcha.ChallengeOptions{
-		HMACKey: mng.cfg.HmacKey,
-		Expires: &expires,
+		MaxNumber: mng.cfg.Complexity,
+		HMACKey:   mng.cfg.HmacKey,
+		Expires:   &expires,
 	})
 }

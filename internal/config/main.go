@@ -10,6 +10,7 @@ type Config struct {
 
 	HmacKey    string        `env:"HMAC_KEY"`
 	Expiration time.Duration `env:"EXPIRATION" envDefault:"10m"`
+	Complexity int64         `env:"COMPLEXITY" envDefault:"1000000"`
 
 	ValkeyURL    string `env:"VALKEY_URL"`
 	ValkeyPrefix string `env:"VALKEY_PREFIX" envDefault:"botbuster:"`
