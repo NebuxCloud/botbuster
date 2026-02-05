@@ -55,7 +55,7 @@ go install github.com/NebuxCloud/botbuster@latest
 
 ### Helm
 
-This project can easily be deployed to Kubernetes with [Nebux' stateless Helm chart](https://github.com/NebuxCloud/helm-charts/tree/main/charts/stateless).
+This project can easily be deployed to Kubernetes with [Nebux' generic Helm chart](https://github.com/NebuxCloud/helm-charts/tree/main/charts/generic).
 
 See the following example values:
 
